@@ -10,11 +10,19 @@ class Sensor {
         if(this.powerStatus === 'on' && status === 'on') throw new Error("Error")
         if(status === 'on') this.status = 'idle'
         this.powerStatus = status
-
-        setTimeout(()=>this.status = 'sensingDistance', this.reportingInterval)
-        setTimeout(()=>this.status = 'reportingData', 500+this.reportingInterval)
-        setTimeout(()=>this.status = 'idle', 1500+this.reportingInterval)
-
+        
+        setTimeout(()=>{
+            this.status = 'sensingDistance'
+            setTimeout(()=>{
+                this.status = 'reportingData'
+                setTimeout(()=>{
+                    this.status = 'idle'
+                },1000)
+            },500)
+        }, this.reportingInterval)
+        // setTimeout(()=>this.status = 'sensingDistance', this.reportingInterval)
+        // setTimeout(()=>this.status = 'reportingData', 500+this.reportingInterval)
+        // setTimeout(()=>this.status = 'idle', 1500+this.reportingInterval)
     }
 
 }
@@ -29,7 +37,7 @@ class IotServer {
     }
 
     publish(action){
-        if(action.actionId === 'CHANGE_REPORTING_INTERVAL'){
+        if(action.actionId === 'CHANGE_REPORTING_INTERVAL') {
             this.sensors.map(v => {
                 if(v.id === action.deviceId && v.powerStatus === 'on') v.reportingInterval = action.payload
             })
